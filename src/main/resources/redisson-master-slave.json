@@ -30,7 +30,7 @@
   "threads":0,
   "nettyThreads":0,
   "codec":{
-    "class":"org.redisson.codec.JsonJacksonCodec"
+    "class":"org.redisson.codec.FstCodec"
   },
   "transportMode":"NIO"
 }

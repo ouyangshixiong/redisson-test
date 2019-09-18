@@ -64,8 +64,20 @@ public class RedissonDAO implements RedissonService{
     }
 
     @Override
-    public AtomicLong getAtomicLong( String key){
-        RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
-        return map.get(key);
+    public Long getAtomicLong( String key){
+        AtomicLong value = null;
+        try {
+            RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
+            value = map.get(key);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return value.get();
+    }
+
+    @Override
+    public String echo(String word) {
+        return word;
     }
 }

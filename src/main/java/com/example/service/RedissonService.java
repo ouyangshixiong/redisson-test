@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public interface RedissonService {
 
+    String echo( String word );
+
     void putAtomicLong( String key, long value );
 
-    AtomicLong getAtomicLong(String key);
+    Long getAtomicLong(String key);
 }
