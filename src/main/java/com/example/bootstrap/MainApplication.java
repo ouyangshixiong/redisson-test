@@ -19,6 +19,7 @@ package com.example.bootstrap;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @Author alexouyang
@@ -26,6 +27,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 @EnableApolloConfig
 @EnableAutoConfiguration
+@ComponentScan("com.example")
 public class MainApplication {
 
     public static void main(String[] args) {

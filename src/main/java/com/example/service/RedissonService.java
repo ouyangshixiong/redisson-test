@@ -1,5 +1,7 @@
 package com.example.service;
 
+import org.redisson.api.RLocalCachedMap;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -13,4 +15,12 @@ public interface RedissonService {
     void putAtomicLong( String key, long value );
 
     Long getAtomicLong(String key);
+
+    void putLong( String key, long value );
+
+    Long getLong(String key);
+
+    RLocalCachedMap getMap(String mapName );
+
+    void destoryMap( String mapName );
 }

@@ -5,6 +5,7 @@ import org.redisson.api.LocalCachedMapOptions;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
 import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
+import org.redisson.api.RAtomicLong;
 import org.redisson.api.RLocalCachedMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,33 @@ public class RedissonDAO implements RedissonService{
     }
 
     @Override
+    public void putLong(String key, long value) {
+        RLocalCachedMap<String, Long> map = redissonClient.getLocalCachedMap("test1",options);
+        map.put(key,value);
+    }
+
+    @Override
+    public Long getLong(String key) {
+        RLocalCachedMap<String, Long> map = redissonClient.getLocalCachedMap("test1", options);
+        return map.get(key);
+    }
+
+    @Override
     public String echo(String word) {
         return word;
+    }
+
+
+    @Override
+    public RLocalCachedMap getMap(String mapName ){
+        return redissonClient.getLocalCachedMap(mapName, options);
+    }
+    /*
+     * 销毁map，节省内存
+     * 如果不销毁，在redissonClient 被shutdown的时候也会被销毁
+     */
+    @Override
+    public void destoryMap( String mapName ){
+        this.getMap(mapName).destroy();
     }
 }
