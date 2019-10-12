@@ -55,11 +55,16 @@ public class RLOController {
         myRLO.getAMap().put("a",aModified);
     }
 
+    /**
+     * persistance 之后，继续引用该对象，怎么set都无效
+     */
     @RequestMapping("/rlo_test_modify_map_notwork")
     public void test2MapNotWork(){
         RLiveObjectService RLOService = redissonService.getRLiveObjectService();
         RLOService.registerClass(MyRLO.class);
-        MyRLO myRLO = RLOService.get(MyRLO.class, "rlo_1");
+        MyRLO myRLO = getMyRLO("rlo_4", "bean4");
+        RLOService.persist(myRLO);
+//        MyRLO myRLO = RLOService.get(MyRLO.class, "rlo_1");
         Map<String,String> newMap = new HashMap<>();
         newMap.put("newkey","newValue");
         myRLO.setAMap(newMap);
