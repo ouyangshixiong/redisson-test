@@ -1,13 +1,10 @@
 package com.example.service;
 
 import org.apache.dubbo.config.annotation.Service;
-import org.redisson.api.LocalCachedMapOptions;
+import org.redisson.api.*;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
 import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
-import org.redisson.api.RAtomicLong;
-import org.redisson.api.RLocalCachedMap;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
@@ -18,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @Date 2019-09-17
  */
 @Service
-public class RedissonDAO implements RedissonService{
+public class RedissonDAO<T> implements RedissonService<T>{
 
     @Autowired
     RedissonClient redissonClient;
@@ -107,4 +104,22 @@ public class RedissonDAO implements RedissonService{
     public void destoryMap( String mapName ){
         this.getMap(mapName).destroy();
     }
+
+    @Override
+    public void putOneInRBucket( String key, T value ){
+        RBucket<T> bucket = redissonClient.getBucket( key);
+        bucket.set(value);
+    }
+
+    @Override
+    public T getFromRBucket( String key ){
+        RBucket<T> bucket = redissonClient.getBucket( key );
+        return bucket.get();
+    }
+
+    @Override
+    public RLiveObjectService getRLiveObjectService(){
+        return redissonClient.getLiveObjectService();
+    }
+
 }

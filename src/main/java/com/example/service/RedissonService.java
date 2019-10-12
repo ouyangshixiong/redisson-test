@@ -1,5 +1,6 @@
 package com.example.service;
 
+import org.redisson.api.RLiveObjectService;
 import org.redisson.api.RLocalCachedMap;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -8,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author alexouyang
  * @Date 2019-09-17
  */
-public interface RedissonService {
+public interface RedissonService<T> {
 
     String echo( String word );
 
@@ -23,4 +24,10 @@ public interface RedissonService {
     RLocalCachedMap getMap(String mapName );
 
     void destoryMap( String mapName );
+
+    void putOneInRBucket( String key, T value );
+
+    T getFromRBucket( String key );
+
+    RLiveObjectService getRLiveObjectService();
 }
