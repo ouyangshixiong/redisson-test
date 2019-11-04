@@ -2,6 +2,8 @@ package com.example.entity;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.RedissonAtomicLong;
+import org.redisson.api.RAtomicLong;
 import org.redisson.api.annotation.REntity;
 import org.redisson.api.annotation.RId;
 
@@ -22,13 +24,14 @@ public abstract class Calc {
 //    AtomicInteger count = new AtomicInteger(0);
     int count = 0;
 
-    public void increasePrimary(){
+    public synchronized void increasePrimary(){
         count++;
     }
 
-    public void increaseByMethod(){
+    public synchronized void increaseByMethod(){
         setCount(getCount()+1);
     }
+
 
 
 }

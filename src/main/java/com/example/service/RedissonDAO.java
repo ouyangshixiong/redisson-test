@@ -164,5 +164,10 @@ public class RedissonDAO<T> implements RedissonService<T>{
         return rloClient.merge( obj );
     }
 
+    @Override
+    public RReadWriteLock getReadWriteLock(String lockName){
+        return redissonClient.getReadWriteLock(lockName);
+    }
+
 
 }

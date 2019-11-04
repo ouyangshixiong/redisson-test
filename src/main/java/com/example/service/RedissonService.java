@@ -3,6 +3,7 @@ package com.example.service;
 import org.redisson.api.RLiveObject;
 import org.redisson.api.RLiveObjectService;
 import org.redisson.api.RLocalCachedMap;
+import org.redisson.api.RReadWriteLock;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,5 +46,7 @@ public interface RedissonService<T> {
     T attach( T obj );
 
     T merge( T obj );
+
+    RReadWriteLock getReadWriteLock(String lockName);
 
 }
