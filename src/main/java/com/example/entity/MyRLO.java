@@ -1,7 +1,8 @@
 package com.example.entity;
 
 import lombok.Data;
-import lombok.ToString;
+import org.redisson.api.RCascadeType;
+import org.redisson.api.annotation.RCascade;
 import org.redisson.api.annotation.REntity;
 import org.redisson.api.annotation.RId;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 /**
  * @author alexouyang
  * @Date 2019-10-12
+ * RLO不兼容Lombok
  */
 @REntity
 @Data
@@ -23,8 +25,10 @@ public class MyRLO{
 
     private String name;
 
+    @RCascade(RCascadeType.ALL)
     private List<String> aList;
 
+    @RCascade(RCascadeType.ALL)
     private Map<String,String> aMap;
 
     @Override

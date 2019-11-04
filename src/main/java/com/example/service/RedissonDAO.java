@@ -17,8 +17,15 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class RedissonDAO<T> implements RedissonService<T>{
 
-    @Autowired
     RedissonClient redissonClient;
+
+    RLiveObjectService rloClient;
+
+    @Autowired
+    RedissonDAO(RedissonClient redissonClient){
+        this.redissonClient = redissonClient;
+        rloClient = this.redissonClient.getLiveObjectService();
+    }
 
     LocalCachedMapOptions options = LocalCachedMapOptions.defaults()
             // 用于淘汰清除本地缓存内的元素
@@ -118,8 +125,44 @@ public class RedissonDAO<T> implements RedissonService<T>{
     }
 
     @Override
-    public RLiveObjectService getRLiveObjectService(){
-        return redissonClient.getLiveObjectService();
+    public T persistRLO( T value ){
+        return rloClient.persist(value);
     }
+
+    @Override
+    public T getRLO( String key, Class clazz ){
+        return (T)rloClient.get( clazz, key );
+    }
+
+    @Override
+    public boolean isRLO(T obj){
+        return rloClient.isLiveObject(obj);
+    }
+
+    @Override
+    public boolean isExists( T obj ){
+        return rloClient.isExists(obj);
+    }
+
+    @Override
+    public void registerRLO(Class cls){
+        rloClient.registerClass(cls);
+    }
+
+    @Override
+    public void deleteRLO(T obj){
+        rloClient.delete(obj);
+    }
+
+    @Override
+    public T attach( T obj ){
+        return rloClient.attach(obj);
+    }
+
+    @Override
+    public T merge( T obj ){
+        return rloClient.merge( obj );
+    }
+
 
 }

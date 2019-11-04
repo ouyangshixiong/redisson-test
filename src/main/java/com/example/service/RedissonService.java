@@ -1,5 +1,6 @@
 package com.example.service;
 
+import org.redisson.api.RLiveObject;
 import org.redisson.api.RLiveObjectService;
 import org.redisson.api.RLocalCachedMap;
 
@@ -29,5 +30,20 @@ public interface RedissonService<T> {
 
     T getFromRBucket( String key );
 
-    RLiveObjectService getRLiveObjectService();
+    T persistRLO( T value );
+
+    T getRLO( String key, Class clazz );
+
+    boolean isRLO(T obj);
+
+    boolean isExists( T obj );
+
+    void registerRLO(Class cls);
+
+    void deleteRLO( T obj );
+
+    T attach( T obj );
+
+    T merge( T obj );
+
 }
