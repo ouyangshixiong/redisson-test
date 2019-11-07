@@ -25,7 +25,7 @@ public abstract class Calc {
     int count = 0;
 
     public synchronized void increasePrimary(){
-        count++;
+        this.count++;
     }
 
     public synchronized void increaseByMethod(){
