@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.entity.CommonObject;
 import com.example.entity.RLOCollectionWrapper;
 import com.example.entity.SimGroup;
 import com.example.persistance.AbstractEntity;
@@ -78,8 +79,27 @@ public class CollectionController {
             }
         }
         redissonRLOWrapper.init(simo1List, Simo1.class);
-        log.info("test22 {}ms", System.currentTimeMillis()-bt );
+        log.info("test23 {}ms", System.currentTimeMillis()-bt );
         redissonRLOWrapper.delete(  (AbstractEntity) redissonRLOWrapper.getDataMapWrapper().get("simo5"), Simo1.class);
         List<Simo1> list = (List<Simo1>)redissonRLOWrapper.getDataListWrapper();
+    }
+
+    /**
+     * fail test
+     * @throws IOException
+     */
+    @RequestMapping("/test24")
+    public void test24()throws IOException {
+        long bt = System.currentTimeMillis();
+        List<CommonObject> commonObjectList = new ArrayList<>();
+        for (int i = 0; i <100 ; i++) {
+            CommonObject commonObject = new CommonObject();
+            commonObjectList.add(commonObject);
+            if( i % 10 == 0 ){
+                log.info("test24 process number:{}", i );
+            }
+        }
+        redissonRLOWrapper.init(commonObjectList, CommonObject.class);
+        log.info("test24 {}ms", System.currentTimeMillis()-bt );
     }
 }
