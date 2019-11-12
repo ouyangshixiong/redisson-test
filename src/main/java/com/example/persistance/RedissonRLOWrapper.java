@@ -44,11 +44,13 @@ public class RedissonRLOWrapper<E extends AbstractEntity> {
         }else if( !cls.isAnnotationPresent(REntity.class) ){
             throw new IOException("Wappered object should be annotated with @REntity!");
         }else{
-            dataListWrapper = new ArrayList<>(data.size());
-            dataMapWrapper = new HashMap<>(data.size());
+//            dataListWrapper = new ArrayList<>(data.size());
+//            dataMapWrapper = new HashMap<>(data.size());
+            dataListWrapper = redissonClient.getList(cls.getName()+"dataList");
+            dataMapWrapper = redissonClient.getMap( cls.getName() + "dataMap" );
             for( AbstractEntity element : data ){
                 String key = element.getPersistName();
-                rloClient.persist(element);
+                element = rloClient.persist(element);
                 dataListWrapper.add(element);
                 dataMapWrapper.put(key, element);
             }
