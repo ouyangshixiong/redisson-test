@@ -2,6 +2,9 @@ package com.example.controller;
 
 import com.example.entity.RLOCollectionWrapper;
 import com.example.entity.SimGroup;
+import com.example.persistance.AbstractEntity;
+import com.example.persistance.RedissonRLOWrapper;
+import com.example.persistance.Simo1;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLiveObjectService;
 import org.redisson.api.RedissonClient;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +27,9 @@ public class CollectionController {
     RedissonClient redissonClient;
 
     RLiveObjectService rloClient;
+
+    @Autowired
+    RedissonRLOWrapper redissonRLOWrapper;
 
     @Autowired
     CollectionController(RedissonClient redissonClient){
@@ -56,5 +63,23 @@ public class CollectionController {
             }
         }
         log.info("test22 {}", System.currentTimeMillis()-bt );
+    }
+
+    @RequestMapping("/test23")
+    public void test23()throws IOException {
+        long bt = System.currentTimeMillis();
+        List<Simo1> simo1List = new ArrayList<>();
+        for (int i = 0; i <100 ; i++) {
+            Simo1 simo1 = new Simo1();
+            simo1.setPersistName("simo" + i);
+            simo1List.add(simo1);
+            if( i % 10 == 0 ){
+                log.info("test23 process number:{}", i );
+            }
+        }
+        redissonRLOWrapper.init(simo1List, Simo1.class);
+        log.info("test22 {}ms", System.currentTimeMillis()-bt );
+        redissonRLOWrapper.delete(  (AbstractEntity) redissonRLOWrapper.getDataMapWrapper().get("simo5"), Simo1.class);
+        List<Simo1> list = (List<Simo1>)redissonRLOWrapper.getDataListWrapper();
     }
 }
