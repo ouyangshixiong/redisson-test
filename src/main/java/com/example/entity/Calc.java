@@ -7,6 +7,7 @@ import org.redisson.api.RAtomicLong;
 import org.redisson.api.annotation.REntity;
 import org.redisson.api.annotation.RId;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @REntity
 @Data
 @Slf4j
-public abstract class Calc {
+public abstract class Calc implements Serializable {
 
     @RId
     String name;
