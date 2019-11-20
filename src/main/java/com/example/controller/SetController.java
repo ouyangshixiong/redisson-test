@@ -48,6 +48,25 @@ public class SetController {
     }
 
     /**
+     * 迟初始化
+     *
+     */
+    @RequestMapping("/simTestLate")
+    public void simTestLate(){
+        SimTest simTest = new SimTest();
+        simTest.setName("simTest");
+        simTest = rloClient.persist(simTest);
+        Set<String> innerSet = new HashSet<>();
+        for (int i = 0; i < 10; i++) {
+            innerSet.add("bbb" + i);
+        }
+        simTest.setInnerSet(innerSet);
+        for (String element : simTest.getInnerSet()){
+            log.info("simTest {}", element);
+        }
+    }
+
+    /**
      * 我们这里自己命名对象innerSet_simTest2
      * 持久化了3个对象
      * 多了一个对innerSet的命名引用对象
