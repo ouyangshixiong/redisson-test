@@ -21,12 +21,13 @@ public class ThreadController {
     @Autowired
     RedissonService redissonService;
 
+    private ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("my-worker-%d").get();
+
+    private Executor executor = new ThreadPoolExecutor(5,20,2, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(), threadFactory);
+
     @RequestMapping("/threads")
     public void threads(){
-
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("my-worker-%d").get();
-        Executor executor = new ThreadPoolExecutor(5,20,2, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(), threadFactory);
         for (int i = 0; i <100 ; i++) {
             executor.execute(()-> {
                     String key = "simPool0";
@@ -46,6 +47,23 @@ public class ThreadController {
                         log.error( Thread.currentThread().getName() +"failed to lock");
                     }
 
+            });
+        }
+    }
+
+
+    @RequestMapping("/nolock")
+    public void nolock(){
+        for (int i = 0; i <100 ; i++) {
+            executor.execute(()-> {
+                String key = "simPool0";
+                try{
+                    SimPool simPool = (SimPool)redissonService.getRLO(key, SimPool.class);
+                    simPool.increaseByMethod();
+                    log.info("After increase, count=" + simPool.getCount());
+                }catch(Throwable e){
+                    log.error("unexpected Exception/Error ", e);
+                }
             });
         }
     }
