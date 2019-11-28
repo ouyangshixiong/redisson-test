@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.*;
 
 /**
+ * 演示Redisson正确的加锁解锁方法
  * @author alexouyang
  * @Date 2019-11-04
  */
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class ThreadController {
     @Autowired
-    RedissonService redissonService;
+    RedissonService<SimPool> redissonService;
 
     private ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("my-worker-%d").get();
 
@@ -33,20 +34,28 @@ public class ThreadController {
                     String key = "simPool0";
                     RLock lock = redissonService.getReadWriteLock(key).writeLock();
                     log.info(Thread.currentThread().getName() + " try to lock on key=" + key);
-                    lock.lock(1, TimeUnit.SECONDS);
-                    if( !Thread.currentThread().isInterrupted() ){
-                        try{
-                            SimPool simPool = (SimPool)redissonService.getRLO(key, SimPool.class);
+                    try {
+                        lock.tryLock(10, 1, TimeUnit.SECONDS);
+                        if (!Thread.currentThread().isInterrupted()) {
+                            SimPool simPool = redissonService.getRLO(key, SimPool.class);
+                            if (simPool == null) {
+                                simPool = new SimPool();
+                                simPool.setName(key);
+                                simPool = redissonService.persistRLO(simPool);
+                            } else {
+                            }
                             simPool.increaseByMethod();
                             log.info("After increase, count=" + simPool.getCount());
-                            lock.unlock();
-                        }catch(Throwable e){
-                            log.error("unexpected Exception/Error ", e);
+                        } else {
+                            log.error(Thread.currentThread().getName() + "failed to lock");
                         }
-                    }else{
-                        log.error( Thread.currentThread().getName() +"failed to lock");
+                    }catch( InterruptedException e ){
+                        Thread.currentThread().interrupt();
+                    }finally {
+                        if( lock.isLocked() ){
+                            lock.unlock();
+                        }else{}
                     }
-
             });
         }
     }
@@ -56,9 +65,14 @@ public class ThreadController {
     public void nolock(){
         for (int i = 0; i <100 ; i++) {
             executor.execute(()-> {
-                String key = "simPool0";
+                String key = "simPool1";
                 try{
-                    SimPool simPool = (SimPool)redissonService.getRLO(key, SimPool.class);
+                    SimPool simPool = redissonService.getRLO(key, SimPool.class);
+                    if( simPool == null ){
+                        simPool = new SimPool();
+                        simPool.setName(key);
+                        simPool = redissonService.persistRLO(simPool);
+                    }else{}
                     simPool.increaseByMethod();
                     log.info("After increase, count=" + simPool.getCount());
                 }catch(Throwable e){

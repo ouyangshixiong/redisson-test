@@ -8,7 +8,7 @@
     "retryInterval":1500,
     "failedSlaveReconnectionInterval":3000,
     "failedSlaveCheckInterval":3,
-    "password":null,
+    "password":"JhR^DBzOT#W%fyQAnHWH",
     "subscriptionsPerConnection":5,
     "clientName":null,
     "loadBalancer":{
@@ -22,9 +22,9 @@
     "masterConnectionPoolSize":64,
     "readMode":"SLAVE",
     "slaveAddresses":[
-      "redis://192.168.3.105:6400"
+      "redis://192.168.3.78:2049"
     ],
-    "masterAddress": "redis://192.168.3.105:6379",
+    "masterAddress": "redis://192.168.3.78:2048",
     "database":0
   },
   "threads":0,
