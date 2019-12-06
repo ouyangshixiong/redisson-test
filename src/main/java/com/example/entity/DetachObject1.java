@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import lombok.Data;
+import org.redisson.api.RAtomicLong;
 import org.redisson.api.RCascadeType;
 import org.redisson.api.annotation.RCascade;
 
@@ -13,9 +14,7 @@ import java.util.List;
 @Data
 public class DetachObject1 extends Calc {
 
-    private SimPool simPool;
-
-    @RCascade(RCascadeType.PERSIST)
+    @RCascade(RCascadeType.ALL)
     private List<Cycle2> cycle2List;
 
     @Override
