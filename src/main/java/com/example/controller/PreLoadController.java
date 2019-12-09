@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 
 /**
  * @author alexouyang
- * @Date 2019-12-05
+ * @Date 2019-12-09
  */
 @RestController
 @Slf4j
-public class DetachController2 {
-
-    private final String redisKey = "detach_object1_2";
+public class PreLoadController {
+    private final String redisKey = "preload_object1_1";
 
     private DetachObject1 testObj;
 
@@ -35,7 +33,7 @@ public class DetachController2 {
     private Executor executor = new ThreadPoolExecutor(5,20,2, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(), threadFactory);
 
-    public DetachController2( RedissonClient redissonClient ){
+    public PreLoadController( RedissonClient redissonClient ){
         this.redissonClient = redissonClient;
         rloClient = redissonClient.getLiveObjectService();
     }
@@ -43,7 +41,7 @@ public class DetachController2 {
     /**
      * 清理redis
      */
-    @RequestMapping("/detach2_clean")
+    @RequestMapping("/preload_clean")
     public void cleanUpRedis(){
         testObj = rloClient.get(DetachObject1.class, redisKey);
         if( testObj != null ){
@@ -54,17 +52,15 @@ public class DetachController2 {
     /**
      * setUp
      */
-    @RequestMapping("/detach2_setup")
+    @RequestMapping("/preload_setup")
     public void setup(){
         //init
         long ct1 = System.currentTimeMillis();
         testObj = new DetachObject1();
         testObj.setName(redisKey);
-        testObj = rloClient.persist(testObj);
         for (int i = 0; i < 1000; i++) {
             Cycle2 temp = new Cycle2();
             temp.setName("cycle2_" + i);
-            temp = rloClient.persist(temp);
             if( testObj.getCycle2List() == null ){
                 testObj.setCycle2List(new ArrayList<>());
             }else{}
@@ -72,65 +68,6 @@ public class DetachController2 {
         }
         log.info("setup time cost {}ms", System.currentTimeMillis()-ct1);
         //end init
-    }
-
-    @RequestMapping("/detach2_detach")
-    public void detach(){
-        long bt = System.currentTimeMillis();
-        if( testObj == null ){
-            return;
-        }else{}
-        testObj = rloClient.detach(testObj);
-        log.info("detach time cost:{}ms", System.currentTimeMillis()-bt);
-    }
-
-    @RequestMapping("/detach2_attach")
-    public void attach(){
-        long bt = System.currentTimeMillis();
-        if( testObj == null ){
-            return;
-        }else{}
-        testObj = rloClient.attach(testObj);
-        log.info("attach time cost:{}ms", System.currentTimeMillis()-bt);
-    }
-
-    /**
-     * Cycle2List会成倍变大；但是Redis中的数据个数并没有变大，重启也不会变大。
-     * 这个效果很操蛋。
-     */
-    @RequestMapping("/detach2_merge")
-    public void merge(){
-        long bt = System.currentTimeMillis();
-        if( testObj == null ){
-            return;
-        }else{}
-        testObj = rloClient.merge(testObj);
-        log.info("merge time cost:{}ms", System.currentTimeMillis()-bt);
-    }
-
-    @RequestMapping("/detach2_replace")
-    public void replace(){
-        long bt = System.currentTimeMillis();
-        if( testObj == null ){
-            return;
-        }else{}
-        DetachObject1 dataInRedis = rloClient.get(testObj.getClass(),testObj.getName());
-        rloClient.delete(dataInRedis);
-        //这中间一段时间Redis中没有数据 危险！！！
-        long bt2 = System.currentTimeMillis();
-        rloClient.persist(testObj);
-        log.info("replace time cost: delete time {}ms, persit time {}ms.", bt2-bt, System.currentTimeMillis()-bt2);
-    }
-
-    @RequestMapping("/detach2_replace2")
-    public void replace2(){
-        long bt = System.currentTimeMillis();
-        if( testObj == null ){
-            return;
-        }else{}
-        DetachObject1 dataInRedis = rloClient.get(testObj.getClass(),testObj.getName());
-        rloClient.attach(testObj);
-        log.info("replace time cost: {}ms.", System.currentTimeMillis()-bt);
     }
 
     private void doCalc(){
@@ -147,7 +84,7 @@ public class DetachController2 {
     /**
      * 使用多线程并发+1
      */
-    @RequestMapping("/detach2_batch")
+    @RequestMapping("/preload_batch")
     public void batchCalc2(){
         for (int i = 0; i < 10; i++) {
             executor.execute(()->{
@@ -159,7 +96,12 @@ public class DetachController2 {
         }
     }
 
-    @RequestMapping("/detach2_print_local")
+    @RequestMapping("/preload_persist")
+    public void persist(){
+        rloClient.persist(testObj);
+    }
+
+    @RequestMapping("/preload_print_local")
     public void printLocalResult(){
         if( testObj == null ){
             return;
@@ -173,7 +115,7 @@ public class DetachController2 {
         }
     }
 
-    @RequestMapping("/detach2_print_redis")
+    @RequestMapping("/preload_print_redis")
     public void printRedisResult(){
         DetachObject1 temp = rloClient.get(DetachObject1.class, redisKey);
         log.info("redis attached{}, count {} innerList.size {}", temp.getName(),temp.getCount(), temp.getCycle2List().size());
