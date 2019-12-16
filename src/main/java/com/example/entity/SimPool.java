@@ -10,7 +10,21 @@ import org.redisson.api.annotation.RId;
  */
 @REntity
 @Data
-public class SimPool extends Calc {
+public class SimPool extends Calc implements Comparable<Object> {
+
+    private int id;
+
+    @Override
+    public int compareTo(Object other) {
+        if (other == null) {
+            return -1;
+        }else{}
+        if( !(other instanceof SimPool) ){
+            return -1;
+        }else{}
+        SimPool o2 = (SimPool)other;
+        return getId() - o2.getId();
+    }
 
     @Override
     public boolean equals( Object other ){
