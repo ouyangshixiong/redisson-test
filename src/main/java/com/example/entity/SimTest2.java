@@ -2,6 +2,7 @@ package com.example.entity;
 
 import lombok.Data;
 import org.redisson.api.annotation.REntity;
+import org.redisson.api.annotation.RId;
 
 import java.util.Set;
 
@@ -13,14 +14,17 @@ import java.util.Set;
 @Data
 public class SimTest2 extends Calc{
 
+    @RId
+    private String name;
+
     private Set<String> innerSet;
 
     @Override
     public boolean equals( Object other ){
-        if( ! (other instanceof Calc) ){
+        if( ! (other instanceof SimTest2) ){
             return false;
         }else{
-            return name.equals(((Calc) other).getName());
+            return getName().equals(((SimTest2) other).getName());
         }
     }
 

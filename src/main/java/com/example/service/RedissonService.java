@@ -1,9 +1,6 @@
 package com.example.service;
 
-import org.redisson.api.RLiveObject;
-import org.redisson.api.RLiveObjectService;
-import org.redisson.api.RLocalCachedMap;
-import org.redisson.api.RReadWriteLock;
+import org.redisson.api.*;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,11 +10,13 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public interface RedissonService<T> {
 
+    RBatch getBatch();
+
+    RTransaction getTransaction();
+
     String echo( String word );
 
-    void putAtomicLong( String key, long value );
-
-    Long getAtomicLong(String key);
+    RAtomicLong getAtomicLong(String key);
 
     void putLong( String key, long value );
 

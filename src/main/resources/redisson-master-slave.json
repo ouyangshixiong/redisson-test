@@ -22,9 +22,9 @@
     "masterConnectionPoolSize":64,
     "readMode":"SLAVE",
     "slaveAddresses":[
-      "redis://192.168.3.78:2049"
+      "redis://192.168.11.96:2049"
     ],
-    "masterAddress": "redis://192.168.3.78:2048",
+    "masterAddress": "redis://192.168.11.96:2048",
     "database":0
   },
   "threads":0,

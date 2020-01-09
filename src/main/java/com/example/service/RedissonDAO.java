@@ -2,6 +2,7 @@ package com.example.service;
 
 import org.apache.dubbo.config.annotation.Service;
 import org.redisson.api.*;
+import org.redisson.api.BatchOptions.*;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
 import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
@@ -25,6 +26,67 @@ public class RedissonDAO<T> implements RedissonService<T>{
     RedissonDAO(RedissonClient redissonClient){
         this.redissonClient = redissonClient;
         rloClient = this.redissonClient.getLiveObjectService();
+    }
+
+    BatchOptions batchOptions = BatchOptions.defaults()
+    // 指定执行模式
+    //
+    // ExecutionMode.REDIS_READ_ATOMIC - 所有命令缓存在Redis节点中，以原子性事务的方式执行。
+    //
+    // ExecutionMode.REDIS_WRITE_ATOMIC - 所有命令缓存在Redis节点中，以原子性事务的方式执行。
+    //
+    // ExecutionMode.IN_MEMORY - 所有命令缓存在Redisson本机内存中统一发送，但逐一执行（非事务）。默认模式。
+    //
+    // ExecutionMode.IN_MEMORY_ATOMIC - 所有命令缓存在Redisson本机内存中统一发送，并以原子性事务的方式执行。
+    //
+                .executionMode(ExecutionMode.IN_MEMORY_ATOMIC)
+
+    // 告知Redis不用返回结果（可以减少网络用量）
+                .skipResult()
+
+    // 将写入操作同步到从节点
+    // 同步到2个从节点，等待时间为1秒钟
+                .syncSlaves(2, 1, TimeUnit.SECONDS)
+
+    // 处理结果超时为2秒钟
+                .responseTimeout(2, TimeUnit.SECONDS)
+
+    // 命令重试等待间隔时间为2秒钟
+                .retryInterval(2, TimeUnit.SECONDS)
+
+    // 命令重试次数。仅适用于未发送成功的命令
+                .retryAttempts(4);
+
+    @Override
+    public RBatch getBatch(){
+        return redissonClient.createBatch(batchOptions);
+    }
+
+
+    TransactionOptions transactionOptions = TransactionOptions.defaults()
+        // 设置参与本次事务的主节点与其从节点同步的超时时间。
+        // 默认值是5秒。
+            .syncSlavesTimeout(5, TimeUnit.SECONDS)
+
+        // 处理结果超时。
+        // 默认值是3秒。
+            .responseTimeout(3, TimeUnit.SECONDS)
+
+        // 命令重试等待间隔时间。仅适用于未发送成功的命令。
+        // 默认值是1.5秒。
+            .retryInterval(2, TimeUnit.SECONDS)
+
+        // 命令重试次数。仅适用于未发送成功的命令。
+        // 默认值是3次。
+            .retryAttempts(3)
+
+        // 事务超时时间。如果规定时间内没有提交该事务则自动滚回。
+        // 默认值是5秒。
+            .timeout(5, TimeUnit.SECONDS);
+
+    @Override
+    public RTransaction getTransaction(){
+        return redissonClient.createTransaction(transactionOptions);
     }
 
     LocalCachedMapOptions options = LocalCachedMapOptions.defaults()
@@ -61,24 +123,29 @@ public class RedissonDAO<T> implements RedissonService<T>{
             // 或者
             .maxIdle(10, TimeUnit.SECONDS);
 
-    @Override
-    public void putAtomicLong( String key, long value ){
-        AtomicLong atomicValue = new AtomicLong(value);
-        RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
-        map.put(key,atomicValue);
-    }
+//    @Override
+//    public void putAtomicLong( String key, long value ){
+//        AtomicLong atomicValue = new AtomicLong(value);
+//        RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
+//        map.put(key,atomicValue);
+//    }
+//
+//    @Override
+//    public Long getAtomicLong( String key){
+//        AtomicLong value = null;
+//        try {
+//            RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
+//            value = map.get(key);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        return value.get();
+//    }
 
     @Override
-    public Long getAtomicLong( String key){
-        AtomicLong value = null;
-        try {
-            RLocalCachedMap<String, AtomicLong> map = redissonClient.getLocalCachedMap("test1",options);
-            value = map.get(key);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return value.get();
+    public RAtomicLong getAtomicLong( String key){
+        return redissonClient.getAtomicLong(key);
     }
 
     @Override
@@ -168,6 +235,5 @@ public class RedissonDAO<T> implements RedissonService<T>{
     public RReadWriteLock getReadWriteLock(String lockName){
         return redissonClient.getReadWriteLock(lockName);
     }
-
 
 }

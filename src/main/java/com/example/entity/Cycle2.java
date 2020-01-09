@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import lombok.Data;
+import org.redisson.api.annotation.RId;
 
 /**
  * @author alexouyang
@@ -9,14 +10,17 @@ import lombok.Data;
 @Data
 public class Cycle2 extends Calc {
 
+    @RId
+    private String name;
+
     private Cycle1 cycle1;
 
     @Override
     public boolean equals( Object other ){
-        if( ! (other instanceof Calc) ){
+        if( ! (other instanceof Cycle2) ){
             return false;
         }else{
-            return name.equals(((Calc) other).getName());
+            return getName().equals(((Cycle2) other).getName());
         }
     }
 

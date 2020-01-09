@@ -106,11 +106,11 @@ public class PreLoadController {
         if( testObj == null ){
             return;
         }else{}
-        log.info("local attached{}, count {} innerList.size {}", testObj.getName(),testObj.getCount(), testObj.getCycle2List().size());
+        log.info("local attached{}, count {} innerList.size {}", testObj.getName(),testObj.queryCount(), testObj.getCycle2List().size());
         List<Cycle2> list = testObj.getCycle2List();
         for (int i = 0; i < list.size() ; i++) {
             if( i % 100 == 0 ){
-                log.info("local innerList :{}, count {}", list.get(i).getName(), list.get(i).getCount());
+                log.info("local innerList :{}, count {}", list.get(i).getName(), list.get(i).queryCount());
             }else{}
         }
     }
@@ -118,11 +118,11 @@ public class PreLoadController {
     @RequestMapping("/preload_print_redis")
     public void printRedisResult(){
         DetachObject1 temp = rloClient.get(DetachObject1.class, redisKey);
-        log.info("redis attached{}, count {} innerList.size {}", temp.getName(),temp.getCount(), temp.getCycle2List().size());
+        log.info("redis attached{}, count {} innerList.size {}", temp.getName(),temp.queryCount(), temp.getCycle2List().size());
         List<Cycle2> list = temp.getCycle2List();
         for (int i = 0; i < list.size() ; i++) {
             if( i % 100 == 0 ){
-                log.info("redis innerList :{}, count {}", list.get(i).getName(), list.get(i).getCount());
+                log.info("redis innerList :{}, count {}", list.get(i).getName(), list.get(i).queryCount());
             }else{}
         }
     }

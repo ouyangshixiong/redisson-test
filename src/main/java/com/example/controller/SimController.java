@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author alexouyang
@@ -121,9 +120,9 @@ public class SimController {
      */
     private void increasePrimary(){
         SimPool simPool = (SimPool)redissonService.getRLO("simPool0", SimPool.class);
-        log.info("increasePrimary before increase, count=" + simPool.getCount());
-        simPool.increasePrimary();
-        log.info("increasePrimary after increase, count=" + simPool.getCount() + " failed to increase!");
+        log.info("increasePrimary before increaseByBatch, count=" + simPool.queryCount());
+//        simPool.increasePrimary();
+        log.info("increasePrimary after increaseByBatch, count=" + simPool.queryCount() + " failed to increaseByBatch!");
 
     }
 
@@ -132,9 +131,9 @@ public class SimController {
      */
     private void increaseByMethod(){
         SimPool simPool = (SimPool)redissonService.getRLO("simPool0", SimPool.class);
-        log.info("increaseByMethod before increase, count=" + simPool.getCount());
+        log.info("increaseByMethod before increaseByBatch, count=" + simPool.queryCount());
         simPool.increaseByMethod();
-        log.info("increaseByMethod after increase, count=" + simPool.getCount());
+        log.info("increaseByMethod after increaseByBatch, count=" + simPool.queryCount());
     }
 
     private SimGroup constructorSimGroup( String persistName ){

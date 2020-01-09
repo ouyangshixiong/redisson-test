@@ -45,7 +45,7 @@ public class ThreadController {
                             } else {
                             }
                             simPool.increaseByMethod();
-                            log.info("After increase, count=" + simPool.getCount());
+                            log.info("After increaseByBatch, count=" + simPool.queryCount());
                         } else {
                             log.error(Thread.currentThread().getName() + "failed to lock");
                         }
@@ -74,7 +74,7 @@ public class ThreadController {
                         simPool = redissonService.persistRLO(simPool);
                     }else{}
                     simPool.increaseByMethod();
-                    log.info("After increase, count=" + simPool.getCount());
+                    log.info("After increaseByBatch, count=" + simPool.queryCount());
                 }catch(Throwable e){
                     log.error("unexpected Exception/Error ", e);
                 }
