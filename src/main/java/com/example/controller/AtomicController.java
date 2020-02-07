@@ -90,7 +90,7 @@ public class AtomicController {
     public void bathAdd(){
         for (int i = 0; i <100 ; i++) {
             executor.execute(()->{
-                if( sim == null ){
+                if ( sim == null ){
                     sim = (Sim)rloClient.getRLO("sim1", Sim.class);
                 }else{}
                 if( sim == null ){
