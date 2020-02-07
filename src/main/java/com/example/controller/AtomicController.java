@@ -88,7 +88,7 @@ public class AtomicController {
 
     @RequestMapping("/atomic_add")
     public void bathAdd(){
-        for (int i = 0; i <20 ; i++) {
+        for (int i = 0; i <100 ; i++) {
             executor.execute(()->{
                 if( sim == null ){
                     sim = (Sim)rloClient.getRLO("sim1", Sim.class);

@@ -1,6 +1,9 @@
 package com.example.entity;
 
 import lombok.Data;
+import org.redisson.api.RCascadeType;
+import org.redisson.api.annotation.RCascade;
+import org.redisson.api.annotation.REntity;
 import org.redisson.api.annotation.RId;
 
 /**
@@ -8,11 +11,13 @@ import org.redisson.api.annotation.RId;
  * @Date 2019-12-03
  */
 @Data
+@REntity
 public class Cycle2 extends Calc {
 
     @RId
     private String name;
 
+    @RCascade(RCascadeType.PERSIST)
     private Cycle1 cycle1;
 
     @Override

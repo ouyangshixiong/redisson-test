@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * @author alexouyang
@@ -76,31 +75,24 @@ public class AdvRLOController {
         advRLO3.setTestAdvRLO3(innerRLO3);
         innerRLO3.setTestAdvRLO3(advRLO3);
 
-        rloClient.registerClass(AdvRLO0.class);
-        rloClient.registerClass(AdvRLO1.class);
-        rloClient.registerClass(AdvRLO2.class);
-        rloClient.registerClass(AdvRLO3.class);
-        AdvRLO0 temp0 = rloClient.persistVertex(advRLO0);
-        AdvRLO1 temp1 = rloClient.persistVertex(advRLO1);
-        AdvRLO2 temp2 = rloClient.persistVertex(advRLO2);
-        AdvRLO3 temp3 = rloClient.persistVertex(advRLO3);
+        List attached = rloClient.persist(advRLO0,advRLO1,advRLO2,advRLO3);
 
-        rloClient.persistEdge(advRLO0, temp0);
-        rloClient.persistEdge(advRLO1, temp1);
-        rloClient.persistEdge(advRLO2, temp2);
-        rloClient.persistEdge(advRLO3, temp3);
-
-        List<AdvRLO1> resultList = temp2.getAdvRLO0().getTestAdvRLO1List();
-        for(AdvRLO1 element : resultList){
-            log.info("inner list testcase:{}", element== null ? null : element.getName());
-            Map<String, AdvRLO2> resultMap = element.getAdvRLO2Map();
-            Iterator<Entry<String, AdvRLO2>> itr = resultMap.entrySet().iterator();
-            while( itr.hasNext() ){
-                Entry<String, AdvRLO2> entry = itr.next();
-                log.info("map testcase, key={}, value={}", entry.getKey(), entry.getValue());
+        for( Object element : attached ){
+            if (element instanceof AdvRLO2){
+                List<AdvRLO1> resultList = ((AdvRLO2)element).getAdvRLO0().getTestAdvRLO1List();
+                for(AdvRLO1 rlo1 : resultList){
+                    log.info("inner list testcase:{}", rlo1== null ? null : rlo1.getName());
+                    Map<String, AdvRLO2> resultMap = rlo1.getAdvRLO2Map();
+                    Iterator<Map.Entry<String, AdvRLO2>> itr = resultMap.entrySet().iterator();
+                    while( itr.hasNext() ){
+                        Map.Entry<String, AdvRLO2> entry = itr.next();
+                        log.info("map testcase, key={}, value={}", entry.getKey(), entry.getValue());
+                    }
+                }
+                log.debug("success");
             }
         }
-        log.debug("success");
+
 
     }
 

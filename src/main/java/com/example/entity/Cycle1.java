@@ -1,6 +1,10 @@
 package com.example.entity;
 
 import lombok.Data;
+import org.apache.jute.compiler.generated.Rcc;
+import org.redisson.api.RCascadeType;
+import org.redisson.api.annotation.RCascade;
+import org.redisson.api.annotation.REntity;
 import org.redisson.api.annotation.RId;
 
 import java.util.Set;
@@ -10,11 +14,13 @@ import java.util.Set;
  * @Date 2019-12-03
  */
 @Data
+@REntity
 public class Cycle1 extends Calc {
 
     @RId
     private String name;
 
+    @RCascade(RCascadeType.PERSIST)
     private Set<Cycle2> cycle2Set;
 
     @Override
